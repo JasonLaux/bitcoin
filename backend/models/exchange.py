@@ -1,13 +1,12 @@
 from dataclasses import dataclass
-from flask_sqlalchemy import SQLAlchemy
-# from flask_migrate import Migrate
-db = SQLAlchemy()
+import datetime
+from typing import Dict, List
+from app import db
 # migrate = Migrate(app, db)
-
 @dataclass
 class Exchange(db.Model):
     __tablename__ = 'exchange'
-    __table_args__ = {"schema": "bitcoin"}
+    # __table_args__ = {'extend_existing': True}
 
     id: str
     name: str
@@ -18,7 +17,7 @@ class Exchange(db.Model):
     socket: bool
     exchangeUrl: str
     updated_unix_millis: int
-    updated_utc: str
+    updated_utc: datetime.datetime
 
     id = db.Column(db.String(50), primary_key=True)
     name = db.Column(db.String(50), nullable=False)
@@ -33,6 +32,28 @@ class Exchange(db.Model):
 
     def __repr__(self):
         return f'id: {self.id}, updated_time: {self.updated_utc}'
+
+    def get_all_exchanges(self):
+        return Exchange.query.all()
+    
+    def get_one_exchange(self, name: str):
+        return Exchange.query.get(name)
+
+    @staticmethod
+    def add_one_exchange(instance: Dict) -> None:
+        print(111111111111)
+        print(instance)
+        exchange = Exchange(**instance)
+        db.session.add(exchange)
+        db.session.commit()
+    
+    @staticmethod
+    def add_all_exchanges(instances: List['Exchange'] ) -> None:
+        db.session.add_all(instances)
+        db.session.commit()
+
+
+    
     
 
     

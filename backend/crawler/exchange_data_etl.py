@@ -5,8 +5,8 @@ from typing import Any, Dict, List, Optional
 # import psycopg2.extras as p
 import requests
 # from backend.database.db import WarehouseConnection, get_warehouse_creds
-from backend.models.exchange import Exchange
-from backend.app import db  
+from models import Exchange
+from app import db  
 
 
 def get_utc_from_unix_time(unix_ts: Optional[Any], second: int = 1000) -> Optional[datetime.datetime]:
@@ -28,10 +28,12 @@ def get_exchange_data() -> List[Dict[str, Any]]:
 
 
 def insert_exchange_data() -> None:
+    print("Inserting data...")
     data = get_exchange_data()
     records = []
     for item in data:
-        item['update_dt'] = get_utc_from_unix_time(item.get('updated'))
+        item['updated_utc'] = get_utc_from_unix_time(item.get('updated_unix_millis'))
+        item['socket'] = True if item['socket'] == 'true' else False
         records.append(Exchange(**item))
     db.session.add_all(records)
     db.session.commit()

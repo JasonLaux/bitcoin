@@ -10,6 +10,9 @@ psycopg2-binary = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
 requests = "*"
+pytest = "*"
+marshmallow = "*"
+pytest-mock = "*"
 
 [dev-packages]
 
