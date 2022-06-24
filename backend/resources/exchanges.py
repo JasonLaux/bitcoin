@@ -30,7 +30,7 @@ class ExchangeSchema(Schema):
     socket = fields.Boolean()
     exchangeUrl = fields.String()
     updated_unix_millis = fields.Integer()
-    updated_utc = fields.DateTime(dt_format='iso8601')
+    updated_utc = fields.DateTime(metadata={'dt_format':'iso8601'})
 
     @post_load
     def make_exchange(self, data, **kwargs):

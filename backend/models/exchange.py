@@ -30,8 +30,21 @@ class Exchange(db.Model):
     updated_unix_millis = db.Column(db.BigInteger, nullable=False)
     updated_utc = db.Column(db.DateTime, nullable=False)
 
-    def __repr__(self):
-        return f'id: {self.id}, updated_time: {self.updated_utc}'
+    def __eq__(self, other):
+        return other.id == self.id and \
+                other.name == self.name and \
+                other.rank == self.rank and \
+                other.percentTotalVolume == self.percentTotalVolume and \
+                other.volumeUsd == self.volumeUsd and \
+                other.tradingPairs == self.tradingPairs and \
+                other.socket == self.socket and \
+                other.exchangeUrl == self.exchangeUrl and \
+                other.updated_unix_millis == self.updated_unix_millis and \
+                other.updated_utc == self.updated_utc 
+
+
+    # def __repr__(self):
+    #     return f'id: {self.id}, updated_time: {self.updated_utc}'
 
     def get_all_exchanges(self):
         return Exchange.query.all()
