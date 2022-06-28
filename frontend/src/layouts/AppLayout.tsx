@@ -1,7 +1,7 @@
 import {CssBaseline} from '@mui/material';
-import Navbar from "../component/NavBar";
+import Navbar from "../components/NavBar";
 import { ThemeProvider } from '@mui/material/styles';
-import customTheme from '../theme/theme';
+import customTheme from '../themes/theme';
 import { Outlet } from "react-router-dom"
 
 export default function AppLayout() {
