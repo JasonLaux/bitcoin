@@ -2,9 +2,7 @@ import datetime
 import logging
 import sys
 from typing import Any, Dict, List, Optional
-# import psycopg2.extras as p
 import requests
-# from backend.database.db import WarehouseConnection, get_warehouse_creds
 from models import Exchange
 from app import db  
 
@@ -32,11 +30,16 @@ def insert_exchange_data() -> None:
     data = get_exchange_data()
     records = []
     for item in data:
-        item['updated_utc'] = get_utc_from_unix_time(item.get('updated_unix_millis'))
+        item['id'] = item["exchangeId"]
+        del item["exchangeId"]
+        item['updated_utc'] = get_utc_from_unix_time(item.get('updated'))
+        item['updated_unix_millis'] = item['updated']
+        del item['updated']
         item['socket'] = True if item['socket'] == 'true' else False
         records.append(Exchange(**item))
     db.session.add_all(records)
     db.session.commit()
+
     # with WarehouseConnection(get_warehouse_creds()).managed_cursor() as curr:
         # p.execute_batch(curr, _get_exchange_insert_query(), data)
 # def _get_exchange_insert_query() -> str:

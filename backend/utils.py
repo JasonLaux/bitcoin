@@ -1,6 +1,7 @@
 from flask.json import JSONEncoder
 import datetime
 
+
 class CustomJSONEncoder(JSONEncoder):
   "Add support for serializing timedeltas"
 
@@ -11,4 +12,3 @@ class CustomJSONEncoder(JSONEncoder):
       return o.isoformat()
     else:
       return super().default(o)
-

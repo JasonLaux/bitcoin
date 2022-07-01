@@ -41,13 +41,16 @@ schema = ExchangeSchema(many=True)
 class Exchanges(Resource):
 
     def __init__(self) -> None:
-
         
         super().__init__()
+
+        # with current_app.app_context():
+        #     insert_exchange_data()
 
     # @marshal_with(resource_fields, envelope='data')
     # @marshal_with(resource_fields)
     def get(self):
+
         # assert len(Exchange.query.all()) == 1
         # print(Exchange.query.get('binance'))
         return schema.dump(Exchange.query.all())

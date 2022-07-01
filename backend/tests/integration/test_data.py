@@ -1,11 +1,9 @@
 import csv
-from curses import meta
-from urllib import response
 from crawler.exchange_data_etl import insert_exchange_data
 from decimal import Decimal
 from models import Exchange
-import datetime
 from crawler.exchange_data_etl import get_utc_from_unix_time
+
 
 def test_insert_exchange_data(app, mocker):
 
@@ -31,7 +29,7 @@ def test_insert_exchange_data(app, mocker):
 		# 	print(response.data)
 
 		meta_data = {
-					'id': 'binance',
+					'exchangeId': 'binance',
 					'name': 'Binance',
 					'rank': 1,
 					'percentTotalVolume': Decimal('25.44443'),
@@ -39,9 +37,9 @@ def test_insert_exchange_data(app, mocker):
 					'tradingPairs': 650,
 					'socket': True,
 					'exchangeUrl': 'https://www.binance.com/',
-					'updated_unix_millis': 1625787943298,
+					'updated': 1625787943298,
 				}
-		meta_data['updated_utc'] = get_utc_from_unix_time(meta_data.get('updated_unix_millis'))
+		meta_data['updated_utc'] = get_utc_from_unix_time(meta_data.get('updated'))
 		test_exchange = Exchange(**meta_data)
 		assert test_exchange == Exchange.query.all()[0]
 

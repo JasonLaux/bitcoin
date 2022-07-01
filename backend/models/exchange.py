@@ -3,6 +3,7 @@ import datetime
 from typing import Dict, List
 from app import db
 # migrate = Migrate(app, db)
+
 @dataclass
 class Exchange(db.Model):
     __tablename__ = 'exchange'
@@ -22,13 +23,13 @@ class Exchange(db.Model):
     id = db.Column(db.String(50), primary_key=True)
     name = db.Column(db.String(50), nullable=False)
     rank = db.Column(db.Integer, nullable=False)
-    percentTotalVolume = db.Column(db.Numeric(8, 5), nullable=False)
-    volumeUsd = db.Column(db.Numeric, nullable=False)
-    tradingPairs = db.Column(db.Integer, nullable=False)
-    socket = db.Column(db.Boolean, nullable=False)
-    exchangeUrl = db.Column(db.String(50), nullable=False)
-    updated_unix_millis = db.Column(db.BigInteger, nullable=False)
-    updated_utc = db.Column(db.DateTime, nullable=False)
+    percentTotalVolume = db.Column(db.Numeric(8, 5), nullable=True)
+    volumeUsd = db.Column(db.Numeric, nullable=True)
+    tradingPairs = db.Column(db.Integer, nullable=True)
+    socket = db.Column(db.Boolean, nullable=True)
+    exchangeUrl = db.Column(db.String(50), nullable=True)
+    updated_unix_millis = db.Column(db.BigInteger, nullable=True)
+    updated_utc = db.Column(db.DateTime, nullable=True)
 
     def __eq__(self, other):
         return other.id == self.id and \
