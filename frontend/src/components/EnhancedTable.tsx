@@ -10,49 +10,48 @@ import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Paper from '@mui/material/Paper';
 import { visuallyHidden } from '@mui/utils';
+import {useState, useEffect} from 'react'
+import api from '../api/baseURL';
+
 
 interface Data {
   rank: number;
   name: string;
-  price: number;
-  volume: number;
+  volumeUsd: number;
   tradingPairs: number;
-  change: string
+  percentTotalVolume: number;
+  updated_utc: string;
 }
 
 function createData(
-    name: string, 
-    rank: number, 
-    price: number, 
-    volume: number, 
-    tradingPairs: number, 
-    change: string): Data {
-
-        return {
-            rank,
-            name,
-            price,
-            tradingPairs,
-            volume,
-            change
-        }
+  {rank, name, volumeUsd, tradingPairs, percentTotalVolume, updated_utc, ...rest}: Data
+): Data {
+  return {
+    rank,
+    name,
+    volumeUsd,
+    tradingPairs, 
+    percentTotalVolume, 
+    updated_utc
+  }
 }
 
-const rows = [
-  createData('Bitcoin', 1, 3.7, 67, 4.3, '-2%'),
-  createData('Ethereum', 2, 25.0, 51, 4.9, '+3%'),
-  createData('Eclair', 3, 16.0, 24, 6.0, '-10%'),
-  createData('Frozen yoghurt', 4, 6.0, 24, 4.0, '-10%'),
-  createData('Gingerbread', 5, 16.0, 49, 3.9, '-10%'),
-  createData('Honeycomb', 6, 3.2, 87, 6.5, '-10%'),
-  createData('Ice cream sandwich', 7, 9.0, 37, 4.3, '-10%'),
-  createData('Jelly Bean', 8, 0.0, 94, 0.0, '-10%'),
-  createData('KitKat', 9, 26.0, 65, 7.0, '-10%'),
-  createData('Lollipop', 10, 0.2, 98, 0.0, '-10%'),
-  createData('Marshmallow', 11, 0, 81, 2.0, '-10%'),
-  createData('Nougat', 12, 19.0, 9, 37.0, '-10%'),
-  createData('Oreo', 13, 18.0, 63, 4.0, '-10%'),
-];
+
+// const rows = [
+//   createData('Bitcoin', 1, 3.7, 67, 4.3, '-2%'),
+//   createData('Ethereum', 2, 25.0, 51, 4.9, '+3%'),
+//   createData('Eclair', 3, 16.0, 24, 6.0, '-10%'),
+//   createData('Frozen yoghurt', 4, 6.0, 24, 4.0, '-10%'),
+//   createData('Gingerbread', 5, 16.0, 49, 3.9, '-10%'),
+//   createData('Honeycomb', 6, 3.2, 87, 6.5, '-10%'),
+//   createData('Ice cream sandwich', 7, 9.0, 37, 4.3, '-10%'),
+//   createData('Jelly Bean', 8, 0.0, 94, 0.0, '-10%'),
+//   createData('KitKat', 9, 26.0, 65, 7.0, '-10%'),
+//   createData('Lollipop', 10, 0.2, 98, 0.0, '-10%'),
+//   createData('Marshmallow', 11, 0, 81, 2.0, '-10%'),
+//   createData('Nougat', 12, 19.0, 9, 37.0, '-10%'),
+//   createData('Oreo', 13, 18.0, 63, 4.0, '-10%'),
+// ];
 
 function descendingComparator<T>(a: T, b: T, orderBy: keyof T) {
   if (b[orderBy] < a[orderBy]) {
@@ -113,29 +112,29 @@ const headCells: readonly HeadCell[] = [
     label: 'Name',
   },
   {
-    id: 'price',
-    numeric: true,
-    disablePadding: false,
-    label: 'Price',
-  },
-  {
     id: 'tradingPairs',
     numeric: true,
     disablePadding: false,
     label: 'Trading Pairs',
   },
   {
-    id: 'volume',
+    id: 'volumeUsd',
     numeric: true,
     disablePadding: false,
     label: 'Volume(24Hr)',
   },
   {
-    id: 'change',
+    id: 'percentTotalVolume',
     numeric: true,
     disablePadding: false,
-    label: 'Change(24Hr)',
+    label: 'Total(%)',
   },
+  {
+    id: 'updated_utc',
+    numeric: false,
+    disablePadding: false,
+    label: 'Status'
+  }
 ];
 
 interface EnhancedTableProps {
@@ -186,10 +185,27 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 }
 
 export default function EnhancedTable() {
-    const [order, setOrder] = React.useState<Order>('asc');
-    const [orderBy, setOrderBy] = React.useState<keyof Data>('rank');
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(25);
+    const [order, setOrder] = useState<Order>('asc');
+    const [orderBy, setOrderBy] = useState<keyof Data>('rank');
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(25);
+    const [exchangeData, setExchangeData] = useState<Data[]>([]);
+
+    console.log('from outside...')
+    console.log(exchangeData)
+
+    useEffect(() => {
+      const dataArray: Data[] = []
+      api.get('/api/exchange').then(res => {
+        res.data.forEach((item: Data) => {
+          dataArray.push(createData(item))
+        })
+        setExchangeData(dataArray)
+        console.log('from useEffect')
+        console.log(exchangeData)
+      }).catch(error => console.log(error))
+    }, []);
+    
 
     const handleRequestSort = (
         event: React.MouseEvent<unknown>,
@@ -218,7 +234,7 @@ export default function EnhancedTable() {
 
     // Avoid a layout jump when reaching the last page with empty rows.
     const emptyRows =
-        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
+        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - exchangeData.length) : 0;
 
     return (
         <Box sx={{ width: '100%' }}>
@@ -232,12 +248,12 @@ export default function EnhancedTable() {
                 order={order}
                 orderBy={orderBy}
                 onRequestSort={handleRequestSort}
-                rowCount={rows.length}
+                rowCount={exchangeData.length}
                 />
                 <TableBody>
                 {/* if you don't need to support IE11, you can replace the `stableSort` call with:
                 rows.slice().sort(getComparator(order, orderBy)) */}
-                {stableSort(rows, getComparator(order, orderBy))
+                {stableSort(exchangeData, getComparator(order, orderBy))
                     .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                     .map((row, index) => {
                     const labelId = `enhanced-table-checkbox-${index}`;
@@ -258,10 +274,10 @@ export default function EnhancedTable() {
                         >
                             {row.name}
                         </TableCell>
-                        <TableCell align="right">{row.price}</TableCell>
                         <TableCell align="right">{row.tradingPairs}</TableCell>
-                        <TableCell align="right">{row.volume}</TableCell>
-                        <TableCell align="right">{row.change}</TableCell>
+                        <TableCell align="right">{row.volumeUsd}</TableCell>
+                        <TableCell align="right">{row.percentTotalVolume}</TableCell>
+                        <TableCell align="right">{row.updated_utc}</TableCell>
                         </TableRow>
                     );
                     })}
@@ -280,7 +296,7 @@ export default function EnhancedTable() {
             <TablePagination
             rowsPerPageOptions={[5, 10, 25]}
             component="div"
-            count={rows.length}
+            count={exchangeData.length}
             rowsPerPage={rowsPerPage}
             page={page}
             onPageChange={handleChangePage}

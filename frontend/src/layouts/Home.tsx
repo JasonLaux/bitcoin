@@ -1,5 +1,5 @@
 import React from 'react';
-import EnhancedTable from '../components/ExTable';
+import EnhancedTable from '../components/EnhancedTable';
 import { Container } from '@mui/material';
 
 function Home() {
