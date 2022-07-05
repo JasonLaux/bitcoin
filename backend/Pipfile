@@ -13,6 +13,7 @@ requests = "*"
 pytest = "*"
 marshmallow = "*"
 pytest-mock = "*"
+apscheduler = "*"
 
 [dev-packages]
 

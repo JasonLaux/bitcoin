@@ -5,6 +5,7 @@ from typing import Any, Dict, List, Optional
 import requests
 from models import Exchange
 from app import db  
+from models import Exchange
 
 
 def get_utc_from_unix_time(unix_ts: Optional[Any], second: int = 1000) -> Optional[datetime.datetime]:
@@ -26,6 +27,8 @@ def get_exchange_data() -> List[Dict[str, Any]]:
 
 
 def insert_exchange_data() -> None:
+    print("Delete all records...")
+    Exchange.query.delete()
     print("Inserting data...")
     data = get_exchange_data()
     records = []

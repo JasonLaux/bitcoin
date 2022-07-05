@@ -3,6 +3,7 @@ from flask_restful import Resource
 from models import Exchange
 from crawler.exchange_data_etl import get_utc_from_unix_time
 from marshmallow import Schema, fields, post_load
+from flask import after_this_request
 
 # resource_fields = {
 #     'id': fields.String,
@@ -50,7 +51,12 @@ class Exchanges(Resource):
     # @marshal_with(resource_fields, envelope='data')
     # @marshal_with(resource_fields)
     def get(self):
-
+        @after_this_request
+        def run_schedular(response):
+            response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
+            response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
+            response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
+            return response
         # assert len(Exchange.query.all()) == 1
         # print(Exchange.query.get('binance'))
         return schema.dump(Exchange.query.all())

@@ -20,21 +20,43 @@ interface Data {
   volumeUsd: number;
   tradingPairs: number;
   percentTotalVolume: number;
-  updated_utc: string;
+  updated_unix_millis: number;
 }
 
+interface TableDisplay {
+  rank: number,
+  name: string,
+  volumeUsd: string,
+  tradingPairs: number,
+  percentTotalVolume: string,
+  updated: string
+}
+
+function transformVolumeUsd(volumeUsd: number): string{
+  const volume = Math.round(volumeUsd)
+  if(String(volume).length > 9 ) {
+    return `$${(volume/1000000000).toFixed(2)}b`
+  }
+  else {
+    return `$${(volume/1000000).toFixed(2)}m`
+  }
+}
+
+
 function createData(
-  {rank, name, volumeUsd, tradingPairs, percentTotalVolume, updated_utc, ...rest}: Data
-): Data {
+  {rank, name, volumeUsd, tradingPairs, percentTotalVolume, updated_unix_millis, ...rest}: Data, 
+  current_time: number
+): TableDisplay {
   return {
     rank,
     name,
-    volumeUsd,
+    volumeUsd: volumeUsd ? transformVolumeUsd(volumeUsd): '',
     tradingPairs, 
-    percentTotalVolume, 
-    updated_utc
+    percentTotalVolume: percentTotalVolume? percentTotalVolume.toFixed(2): '', 
+    updated: updated_unix_millis ? `Updated ${Math.floor((current_time - updated_unix_millis) / (60 * 1000))} minutes ago`: ''
   }
 }
+
 
 
 // const rows = [
@@ -93,7 +115,7 @@ function stableSort<T>(array: readonly T[], comparator: (a: T, b: T) => number) 
 
 interface HeadCell {
   disablePadding: boolean;
-  id: keyof Data;
+  id: keyof TableDisplay;
   label: string;
   numeric: boolean;
 }
@@ -130,7 +152,7 @@ const headCells: readonly HeadCell[] = [
     label: 'Total(%)',
   },
   {
-    id: 'updated_utc',
+    id: 'updated',
     numeric: false,
     disablePadding: false,
     label: 'Status'
@@ -139,7 +161,7 @@ const headCells: readonly HeadCell[] = [
 
 interface EnhancedTableProps {
 //   numSelected: number;
-  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof Data) => void;
+  onRequestSort: (event: React.MouseEvent<unknown>, property: keyof TableDisplay) => void;
 //   onSelectAllClick: (event: React.ChangeEvent<HTMLInputElement>) => void;
   order: Order;
   orderBy: string;
@@ -151,7 +173,7 @@ function EnhancedTableHead(props: EnhancedTableProps) {
   const { order, orderBy, onRequestSort } = props;
 
   const createSortHandler =
-    (property: keyof Data) => (event: React.MouseEvent<unknown>) => {
+    (property: keyof TableDisplay) => (event: React.MouseEvent<unknown>) => {
       onRequestSort(event, property);
     };
 
@@ -186,30 +208,27 @@ function EnhancedTableHead(props: EnhancedTableProps) {
 
 export default function EnhancedTable() {
     const [order, setOrder] = useState<Order>('asc');
-    const [orderBy, setOrderBy] = useState<keyof Data>('rank');
+    const [orderBy, setOrderBy] = useState<keyof TableDisplay>('rank');
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(25);
-    const [exchangeData, setExchangeData] = useState<Data[]>([]);
-
-    console.log('from outside...')
-    console.log(exchangeData)
+    const [exchangeData, setExchangeData] = useState<TableDisplay[]>([]);
+    // const current_time = Math.floor((new Date()).getTime() / 1000)
 
     useEffect(() => {
-      const dataArray: Data[] = []
+      const dataArray: TableDisplay[] = []
+      const current_time = (new Date()).getTime()
       api.get('/api/exchange').then(res => {
         res.data.forEach((item: Data) => {
-          dataArray.push(createData(item))
+          dataArray.push(createData(item, current_time))
         })
         setExchangeData(dataArray)
-        console.log('from useEffect')
-        console.log(exchangeData)
       }).catch(error => console.log(error))
     }, []);
     
 
     const handleRequestSort = (
         event: React.MouseEvent<unknown>,
-        property: keyof Data,
+        property: keyof TableDisplay,
     ) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
@@ -277,7 +296,7 @@ export default function EnhancedTable() {
                         <TableCell align="right">{row.tradingPairs}</TableCell>
                         <TableCell align="right">{row.volumeUsd}</TableCell>
                         <TableCell align="right">{row.percentTotalVolume}</TableCell>
-                        <TableCell align="right">{row.updated_utc}</TableCell>
+                        <TableCell align="right">{row.updated}</TableCell>
                         </TableRow>
                     );
                     })}
