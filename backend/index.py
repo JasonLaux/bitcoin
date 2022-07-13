@@ -1,17 +1,25 @@
-from time import sleep
-from app import create_app, db
+from app import create_app
 from flask_restful import Api
 from resources import Exchanges
 import os
-import atexit
 from apscheduler.schedulers.background import BackgroundScheduler
 from crawler.exchange_data_etl import insert_exchange_data
+from dotenv import load_dotenv
+from flask import jsonify
+from gevent.pywsgi import WSGIServer
+
+load_dotenv()
 
 scheduler = BackgroundScheduler(daemon=True)
 
-os.environ["FLASK_ENV"] = "development"
-app = create_app('config.DevelopmentConfig')
+if os.environ["FLASK_ENV"] == "development":
+    print("Development mode...")
+    configFile = 'config.DevelopmentConfig'
+elif os.environ["FLASK_ENV"] == "production":
+    print("Procution mode...")
+    configFile = 'config.ProductionConfig'
 
+app = create_app(configFile)
 # Routing
 api = Api(app)
 api.add_resource(Exchanges, '/api/exchange') 
@@ -24,8 +32,13 @@ scheduler.add_job(func=schedule_insert_exchange_data, trigger="interval", minute
 
 @app.before_first_request
 def initialize():
+    print(1111111111111111)
     insert_exchange_data()
     scheduler.start()
+
+@app.route('/')
+def index():
+    return jsonify({"Hello World": "Hello World"})
 
 
 # @app.after_request
@@ -36,7 +49,8 @@ def initialize():
 #     return response
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    wsgi_server = WSGIServer(("0.0.0.0", 5000), app)
+    wsgi_server.serve_forever()
     # atexit.register(lambda: scheduler.shutdown())
 
 # with app.app_context():

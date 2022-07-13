@@ -1,8 +1,8 @@
 up:
-	docker compose --env-file env up --build -d
-
+	docker compose --env-file .env up --build -d
+	
 down: 
-	docker compose down
+	docker compose down -v
 
 shell:
 	docker exec -ti pipelinerunner bash

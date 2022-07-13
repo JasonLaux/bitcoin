@@ -14,6 +14,8 @@ pytest = "*"
 marshmallow = "*"
 pytest-mock = "*"
 apscheduler = "*"
+python-dotenv = "*"
+gevent = "*"
 
 [dev-packages]
 

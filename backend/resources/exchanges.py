@@ -52,7 +52,7 @@ class Exchanges(Resource):
     # @marshal_with(resource_fields)
     def get(self):
         @after_this_request
-        def run_schedular(response):
+        def add_header(response):
             response.headers.add('Access-Control-Allow-Origin', 'http://localhost:3000')
             response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
             response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE')
