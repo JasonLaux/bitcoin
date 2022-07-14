@@ -16,6 +16,7 @@ pytest-mock = "*"
 apscheduler = "*"
 python-dotenv = "*"
 gevent = "*"
+flask-cors = "*"
 
 [dev-packages]
 

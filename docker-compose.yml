@@ -17,15 +17,16 @@ services:
       restart: always
       ports:
         - "5432:5432"
-    backend:
-      image: backend
+    app:
+      image: app
       depends_on:
         - warehouse
-      container_name: crypto_backend
+      container_name: crypto_app
       build:
-        context: ./backend
+        context: .
+        dockerfile: Dockerfile.app
       volumes:
-        - ./backend:/backend
+        - ./backend:/app/api
       environment:
         FLASK_ENV: production
         POSTGRES_USER: ${POSTGRES_USER}
@@ -33,19 +34,6 @@ services:
         POSTGRES_DB: ${POSTGRES_DB}
         POSTGRES_HOST: ${POSTGRES_HOST}
         POSTGRES_PORT: ${POSTGRES_PORT}
-      ports:
-        - "5000:5000"
-    frontend:
-      image: frontend
-      container_name: crypto_frontend
-      build:
-        context: ./frontend
-      volumes:
-        - ./frontend:/frontend
-      depends_on:
-        - warehouse
-        - backend
-      environment:
         REACT_APP_BACKEND_HOST: ${BACKEND_HOST}
         REACT_APP_BACKEND_PORT: ${BACKEND_PORT}
       ports:

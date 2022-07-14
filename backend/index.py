@@ -5,7 +5,6 @@ import os
 from apscheduler.schedulers.background import BackgroundScheduler
 from crawler.exchange_data_etl import insert_exchange_data
 from dotenv import load_dotenv
-from flask import jsonify
 from gevent.pywsgi import WSGIServer
 
 load_dotenv()
@@ -38,7 +37,7 @@ def initialize():
 
 @app.route('/')
 def index():
-    return jsonify({"Hello World": "Hello World"})
+    return app.send_static_file('index.html')
 
 
 # @app.after_request
@@ -49,7 +48,7 @@ def index():
 #     return response
 
 if __name__ == '__main__':
-    wsgi_server = WSGIServer(("0.0.0.0", 5000), app)
+    wsgi_server = WSGIServer(("0.0.0.0", 3000), app)
     wsgi_server.serve_forever()
     # atexit.register(lambda: scheduler.shutdown())
 

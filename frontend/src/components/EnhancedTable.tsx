@@ -11,7 +11,7 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Paper from '@mui/material/Paper';
 import { visuallyHidden } from '@mui/utils';
 import {useState, useEffect} from 'react'
-import api from '../api/baseURL';
+import axios from "axios";
 
 
 interface Data {
@@ -217,7 +217,7 @@ export default function EnhancedTable() {
     useEffect(() => {
       const dataArray: TableDisplay[] = []
       const current_time = (new Date()).getTime()
-      api.get('/api/exchange').then(res => {
+      axios.get('/api/exchange').then(res => {
         res.data.forEach((item: Data) => {
           dataArray.push(createData(item, current_time))
         })
