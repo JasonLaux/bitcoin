@@ -48,7 +48,7 @@ def index():
 #     return response
 
 if __name__ == '__main__':
-    wsgi_server = WSGIServer(("0.0.0.0", 3000), app)
+    wsgi_server = WSGIServer(("0.0.0.0", 80), app)
     wsgi_server.serve_forever()
     # atexit.register(lambda: scheduler.shutdown())
 

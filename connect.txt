@@ -1,0 +1,1 @@
+ssh -i ~/.ssh/awsFreeTier.pem ec2-user@ec2-54-221-46-119.compute-1.amazonaws.com

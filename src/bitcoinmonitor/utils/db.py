@@ -3,7 +3,6 @@ from dataclasses import dataclass
 
 import psycopg2
 
-
 @dataclass
 class DBConnection:
     db: str

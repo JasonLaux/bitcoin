@@ -18,15 +18,10 @@ services:
       ports:
         - "5432:5432"
     app:
-      image: app
+      image: jasonlaux/app:v2
       depends_on:
         - warehouse
       container_name: crypto_app
-      build:
-        context: .
-        dockerfile: Dockerfile.app
-      volumes:
-        - ./backend:/app/api
       environment:
         FLASK_ENV: production
         POSTGRES_USER: ${POSTGRES_USER}
