@@ -1,12 +1,12 @@
 # Bitcoin Monitor
-
-This is an ETL pipeline to pull bitcoin exchange data from [CoinCap API](https://docs.coincap.io/) and load it into our data warehouse. For more details check out the blog at https://startdataengineering.com/post/data-engineering-project-to-impress-hiring-managers/
+[Link]
+This is an ETL pipeline to pull bitcoin exchange data from [CoinCap API](https://docs.coincap.io/), load it into PostgreSQL database, 
 
 ## Architecture
 
 ![Arch](assets/images/bc_arch.png)
 
-We use python to pull, transform and load data. Our warehouse is postgres. We also spin up a Metabase instance for our presentation layer.
+Back-end adopts Flask to pull, transform and load data. Data warehouse is postgres. Front-end uses [MUI](https://mui.com/).
 
 All of the components are running as docker containers.
 ## Setup
@@ -27,7 +27,6 @@ make up # starts all the containers
 make ci # runs formatting, lint check, type check and python test
 ```
 
-If the CI step passes you can go to http://localhost:3000 to checkout your Metabase instance.
 
 You can connect to the warehouse with the following credentials
 
