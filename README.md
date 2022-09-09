@@ -1,5 +1,4 @@
 # Bitcoin Monitor
-[Link]
 This is an ETL pipeline to pull bitcoin exchange data from [CoinCap API](https://docs.coincap.io/), load it into PostgreSQL database, 
 
 ## Architecture
@@ -36,7 +35,6 @@ Database name: finance
 ```
 The remaining configs are available in the [env](env) file.
 
-Refer to [this doc](https://www.metabase.com/docs/latest/users-guide/07-dashboards.html) for creating a Metabase dashboard.
 
 ### Production
 
