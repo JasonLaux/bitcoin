@@ -1,5 +1,6 @@
 # Bitcoin Monitor
-This is an ETL pipeline to pull bitcoin exchange data from [CoinCap API](https://docs.coincap.io/), load it into PostgreSQL database, 
+[Website](54.221.46.119)
+This is an ETL pipeline to pull bitcoin exchange data from [CoinCap API](https://docs.coincap.io/), load it into PostgreSQL database.
 
 ## Architecture
 
